@@ -12,36 +12,26 @@ const RegisterForm = () => {
     email: "",
     description: "",
     openHours: "",
-    image: "",
+    image: null,
     website: "",
   });
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+};
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const partnerData = {
-      name: formData.name,
-      phone: formData.phone,
-      email: formData.email,
-      description: formData.description,
-      openHours: formData.openHours,
-      image: formData.image,
-      website: formData.website,
-    };
-
-    try {
-      const responseData = await createPartner(partnerData);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  try {
+      const responseData = await createPartner(formData);
       console.log("Partenaire créé :", responseData);
       navigate("/login");
-      
-    } catch (error) {
+  } catch (error) {
       console.error("Erreur lors de la création du partenaire", error);
-    }
-  };
+  }
+};
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
