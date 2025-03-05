@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { TextField, FormControl, Box, Typography, Button, IconButton, InputAdornment } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { createPartner } from "../../services/api";
+import { Link, useNavigate } from "react-router-dom";
 
 const RegisterForm = () => {
   const navigate = useNavigate();
@@ -55,7 +55,7 @@ const RegisterForm = () => {
       </Typography>
 
       <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <FormControl sx={{ m: 1, minWidth: 300 }} fullWidth>
+        <FormControl sx={{ m: 1, maxWidth: 300 }} fullWidth>
           <TextField
             name="name"
             label="Nom"
@@ -158,6 +158,9 @@ const RegisterForm = () => {
         </FormControl>
         <Button type="submit" variant="contained" sx={{ m: 5 }} color="secondary">
           Créer
+        </Button>
+        <Button sx={{ textAlign: "center" }} component={Link} to="/login" color="primary">
+          Me connecter
         </Button>
       </Box>
     </Box>

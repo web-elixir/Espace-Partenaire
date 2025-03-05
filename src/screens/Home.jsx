@@ -97,15 +97,30 @@ const Home = () => {
           height: "100vh",
         }}
       >
-        <Typography variant="h1" sx={{ fontSize: 24, marginBottom: 5, color: "red" }}>
-          {error}
+        <Typography variant="h1" sx={{ fontSize: 24, marginBottom: 5 }}>
+          Partenaire du plan des étudiants ?
         </Typography>
         <Button component={Link} to="/login" variant="contained" sx={{ m: 3 }}>
-          Se reconnecter
+          Connexion
+        </Button>
+        <Button
+          component={Link}
+          to="/register"
+          variant="contained"
+          color="secondary"
+          sx={{ m: 3 }}
+        >
+          Créer mon espace partenaire
         </Button>
       </Box>
     );
   }
+
+  const handleLogout = () => {
+    localStorage.removeItem("partnerId");
+    localStorage.removeItem("token");
+    navigate("/");
+  };
 
   return (
     <Box
@@ -128,6 +143,11 @@ const Home = () => {
           {/* Ajoutez d'autres informations selon vos besoins */}
         </Box>
       )}
+
+      {/* Ajouter un bouton pour se deconneter et cleur le token  */}
+      <Button variant="contained" sx={{ m: 3 }} color="secondary" onClick={handleLogout}>
+        Se déconnecter
+      </Button>
     </Box>
   );
 };
