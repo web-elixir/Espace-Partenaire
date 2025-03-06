@@ -1,4 +1,5 @@
 export const API_URL = "http://localhost:1337/api";
+export const URL = "http://localhost:1337";
 
 export const createPartner = async (partnerData) => {
     const formData = new FormData();
@@ -19,10 +20,13 @@ export const createPartner = async (partnerData) => {
 
         if (!response.ok) {
             const errorData = await response.json();
+            console.error("Erreur de réponse :", errorData); // Log de l'erreur
             throw new Error(errorData.error.message || "Erreur lors de la création du partenaire");
         }
 
-        return await response.json();
+        const responseData = await response.json();
+        console.log("Réponse de l'API :", responseData); // Log de la réponse
+        return responseData;
     } catch (error) {
         console.error("Erreur API :", error);
         return null;
