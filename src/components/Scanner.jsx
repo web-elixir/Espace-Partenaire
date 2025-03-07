@@ -3,10 +3,10 @@ import { Box, Button, Typography } from "@mui/material";
 import { QrReader } from "react-qr-reader";
 
 const Scanner = ({ onScan }) => {
-  const [open, setOpen] = useState(false); // Gère l'ouverture du scanner
+  const [open, setOpen] = useState(false);
   const [scanResult, setScanResult] = useState(null);
-  const [hasPermission, setHasPermission] = useState(false); // Gère la permission d'utiliser l'appareil photo
-  const [permissionDenied, setPermissionDenied] = useState(false); // Gère le cas où la permission est refusée
+  const [hasPermission, setHasPermission] = useState(false); 
+  const [permissionDenied, setPermissionDenied] = useState(false);
 
   useEffect(() => {
     // Demande la permission pour l'appareil photo
@@ -31,6 +31,17 @@ const Scanner = ({ onScan }) => {
       setScanResult(data);
       onScan(data); // Passe le résultat du scan au parent
       setOpen(false); // Ferme le scanner après un scan réussi
+
+      // Tenter d'accéder au contenu
+      const scannedContent = data;
+      console.log("Extracted content: ", scannedContent);
+
+      if (scannedContent.startsWith("plandesetudiantsdebesancon")) {
+        window.open(scannedContent, "_blank");
+      } else {
+        console.warn("Scanned content is not a valid URL");
+        alert("QR Code non valide ou contenu manquant !");
+      }
     }
   };
 

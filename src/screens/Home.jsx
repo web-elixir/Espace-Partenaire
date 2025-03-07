@@ -141,11 +141,13 @@ const Home = () => {
         margin: 5,
       }}
     >
-      <img
-        src={`${URL}${partnerInfo.image.url}`}
-        alt={partnerInfo.name}
-        style={{ maxWidth: 200, maxHeight: 200, marginBottom: 50 }}
-      />
+      {partnerInfo && partnerInfo.image && (
+        <img
+          src={`${URL}${partnerInfo.image.url}`}
+          alt={partnerInfo.name}
+          style={{ maxWidth: 200, maxHeight: 200, marginBottom: 50 }}
+        />
+      )}
 
       <Typography variant="h1">
         Bienvenue{" "}
@@ -157,7 +159,12 @@ const Home = () => {
 
       {partnerInfo && (
         <Box sx={{ mt: 5 }}>
+
+        {partnerInfo.scanCodes ? (
           <Typography>Codes scannés : {partnerInfo.scanCodes.length}</Typography>
+        ) : (
+          <Typography>Codes scannés : 0</Typography>
+        )}
 
           {/* Afficher le scanner lorsqu'on clique sur le bouton */}
           <Scanner onScan={handleScanResult} />
