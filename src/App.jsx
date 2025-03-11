@@ -7,20 +7,17 @@ import theme from './assets/theme';
 import { ThemeProvider } from '@mui/material/styles';
 
 function App() {
-
   return (
-    <>
-      <ThemeProvider theme={theme}>
-        <Router>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Routes>
-        </Router>
-      </ThemeProvider>
-    </>
-  )
+    <ThemeProvider theme={theme}>
+      <Router basename="/partenaire">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
+  );
 }
 
-export default App
+export default App;

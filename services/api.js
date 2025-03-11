@@ -1,6 +1,10 @@
 export const API_URL = "http://localhost:1337/api";
 export const URL = "http://localhost:1337";
 
+// export const API_URL = "https://www.strapi.plan-etudiant-besancon.com/api"; 
+// export const URL = "https://www.strapi.plan-etudiant-besancon.com"; 
+
+
 export const createPartner = async (partnerData) => {
     const formData = new FormData();
 

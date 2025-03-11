@@ -24,7 +24,7 @@ const LoginForm = () => {
       setMessage('Connexion réussie');
       setError('');
       localStorage.setItem('partnerId', response.data.partnerId);
-      window.location.href = '/';
+      window.location.href = '/partenaire';
     } catch (err) {
       if (!err.response) {
         setError("Erreur serveur. Veuillez réessayer plus tard.");

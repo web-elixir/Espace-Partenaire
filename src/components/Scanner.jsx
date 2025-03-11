@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Box, Button, Typography } from "@mui/material";
-import { QrReader } from "react-qr-reader";
+import { Html5QrcodeScanner } from "html5-qrcode";
 
 const Scanner = ({ onScan }) => {
   const [open, setOpen] = useState(false);
   const [scanResult, setScanResult] = useState(null);
-  const [hasPermission, setHasPermission] = useState(false); 
+  const [hasPermission, setHasPermission] = useState(false);
   const [permissionDenied, setPermissionDenied] = useState(false);
 
   useEffect(() => {
@@ -26,26 +26,39 @@ const Scanner = ({ onScan }) => {
     checkPermission(); // Vérifie la permission dès que le composant est monté
   }, []);
 
-  const handleScan = (data) => {
-    if (data !== null) {
-      setScanResult(data);
-      onScan(data); // Passe le résultat du scan au parent
-      setOpen(false); // Ferme le scanner après un scan réussi
+  useEffect(() => {
+    if (open && hasPermission) {
+      const scanner = new Html5QrcodeScanner(
+        "reader", { fps: 10, qrbox: { width: 250, height: 250 } },
+        /* verbose= */ false);
+      scanner.render(onScanSuccess, onScanError);
 
-      // Tenter d'accéder au contenu
-      const scannedContent = data;
-      console.log("Extracted content: ", scannedContent);
+      return () => {
+        scanner.clear().catch(error => {
+          console.error("Failed to clear html5QrcodeScanner. ", error);
+        });
+      };
+    }
+  }, [open, hasPermission]);
 
-      if (scannedContent.startsWith("plandesetudiantsdebesancon")) {
-        window.open(scannedContent, "_blank");
-      } else {
-        console.warn("Scanned content is not a valid URL");
-        alert("QR Code non valide ou contenu manquant !");
-      }
+  const onScanSuccess = (decodedText, decodedResult) => {
+    setScanResult(decodedText);
+    onScan(decodedText); // Passe le résultat du scan au parent
+    setOpen(false); // Ferme le scanner après un scan réussi
+
+    // Tenter d'accéder au contenu
+    const scannedContent = decodedText;
+    console.log("Extracted content: ", scannedContent);
+
+    if (scannedContent.startsWith("plandesetudiantsdebesancon")) {
+      window.open(scannedContent, "_blank");
+    } else {
+      console.warn("Scanned content is not a valid URL");
+      alert("QR Code non valide ou contenu manquant !");
     }
   };
 
-  const handleError = (err) => {
+  const onScanError = (err) => {
     console.error(err);
   };
 
@@ -97,12 +110,7 @@ const Scanner = ({ onScan }) => {
 
       {open && hasPermission && (
         <Box>
-          <QrReader
-            delay={300}
-            style={{ width: 300 }}
-            onError={handleError}
-            onScan={handleScan}
-          />
+          <div id="reader" style={{ width: 300 }}></div>
           <Button variant="contained" onClick={handleClose}>
             Fermer Scanner
           </Button>
