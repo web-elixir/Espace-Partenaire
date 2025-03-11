@@ -3,6 +3,8 @@ import { Typography, Box, Button, colors } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { URL, API_URL } from "../../services/api";
 import Scanner from "../components/Scanner"; // Import du Scanner
+import logoPlan from "../../public/logoplan2023.png";
+import pictoPlan from "../../public/Logo plan.png";
 
 const Home = () => {
   const [partnerInfo, setPartnerInfo] = useState(null);
@@ -50,7 +52,9 @@ const Home = () => {
         height: "100vh",
       }}
     >
-      <Typography variant="h1" sx={{ fontSize: 24, marginBottom: 5 }}>
+      {/* Afficher le logo du plan qui est dans mon dossier public a la racine */}
+      <img src={logoPlan} alt="Logo plan" style={{ maxWidth: 200, maxHeight: 200, marginBottom: 50 }} />
+      <Typography variant="h1" sx={{ fontSize: 24, marginBottom: 5, fontFamily: "Spoof-Bold" }}>
         Partenaire du plan des étudiants ?
       </Typography>
       <Button component={Link} to="/login" variant="contained" sx={{ m: 3 }}>
@@ -138,20 +142,73 @@ const Home = () => {
   return (
     <Box
       sx={{
-        margin: 5,
+        margin: { xs: 2, md: 5 },
       }}
     >
       {partnerInfo && partnerInfo.image && (
-        <img
-          src={`${URL}${partnerInfo.image.url}`}
-          alt={partnerInfo.name}
-          style={{ maxWidth: 200, maxHeight: 200, marginBottom: 50 }}
-        />
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            flexDirection: "row",
+            marginBottom: { xs: "20px", md: "50px" },
+          }}
+        >
+          {/* Image du partenaire */}
+          <Box 
+            sx={{ 
+              width: { xs: "100px", md: "150px" }, 
+              height: { xs: "100px", md: "150px" } 
+            }}
+          >
+            <img
+              src={`${URL}${partnerInfo.image.url}`}
+              alt={partnerInfo.name}
+              style={{
+                width: "100%",
+                height: "100%", 
+                objectFit: "contain"
+              }}
+            />
+          </Box>
+
+          {/* Symbole "&" */}
+          <Typography
+            sx={{
+              fontSize: { xs: 18, md: 25 }, 
+              marginLeft: { xs: "20px", md: "50px" },
+              fontFamily: "Spoof-Bold",
+            }}
+          >
+            & 
+          </Typography>
+
+          {/* Logo Plan */}
+          <Box 
+            sx={{ 
+              marginLeft: { xs: "20px", md: "50px" },
+              width: { xs: "100px", md: "150px" }, 
+              height: { xs: "100px", md: "150px" } 
+            }}
+          >
+            <img
+              src={logoPlan}
+              alt=""
+              style={{
+                width: "100%",
+                height: "100%", 
+                objectFit: "contain"
+              }}
+            />
+          </Box>
+        </Box>
       )}
 
-      <Typography variant="h1">
+
+
+      <Typography sx={{ textAlign:"left" }} variant="h1">
         Bienvenue{" "}
-        <Typography variant="h1" component="span" color="secondary">
+        <Typography variant="h1" sx={{ fontFamily: "Spoof-Bold" }} component="span" color="secondary">
           {partnerInfo.name}
         </Typography>{" "}
         sur votre espace partenaire
@@ -169,7 +226,7 @@ const Home = () => {
           {/* Afficher le scanner lorsqu'on clique sur le bouton */}
           <Scanner onScan={handleScanResult} />
 
-          <Typography sx={{ mt: 2 }}>
+          <Typography color="primary" sx={{ mt: 5, fontFamily: "Spoof-Bold" }}>
             <b>Offre :</b>{" "}
             <Typography component="span" color="primary">
               <b>{partnerInfo.offer?.title}</b>
@@ -182,11 +239,12 @@ const Home = () => {
               maxWidth: 600,
               display: "flex",
               flexDirection: "column",
-              backgroundColor: colors.grey[100],
+              backgroundColor: colors.grey[50],
               padding: 2,
+              borderRadius: 5
             }}
           >
-            <Typography variant="h2" sx={{ fontSize: 20 }}>
+            <Typography variant="h2" sx={{ fontSize: 20, fontFamily: "Spoof-Bold" }}>
               Vos informations :
             </Typography>
             <Typography sx={{ mt: 2 }}>

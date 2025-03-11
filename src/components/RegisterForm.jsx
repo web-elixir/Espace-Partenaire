@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TextField, FormControl, Box, Typography, Button, IconButton, InputAdornment, Grid, Snackbar, Alert } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Opacity, Visibility, VisibilityOff } from "@mui/icons-material";
 import { createPartner } from "../../services/api";
 import { Link, useNavigate } from "react-router-dom";
+import pictoPlan from '../../public/Logo plan.png'
 
 const RegisterForm = () => {
   const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [error, setError] = useState(null);
-
+  const [captcha, setCaptcha] = useState({ question: "", answer: 0, userAnswer: "" });
 
 
   const [formData, setFormData] = useState({
@@ -34,14 +35,24 @@ const RegisterForm = () => {
     setFormData({ ...formData, image: e.target.files[0] });
   };
 
+  useEffect(() => {
+    generateCaptcha();
+  }, []);
+
+  const generateCaptcha = () => {
+    const num1 = Math.floor(Math.random() * 10) + 1;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    setCaptcha({ question: `${num1} + ${num2} = `, answer: num1 + num2, userAnswer: "" });
+  };  
+
   const validateForm = () => {
     let newErrors = {};
     if (formData.name.trim().length < 3) newErrors.name = "Le nom doit faire au moins 3 caractères.";
     if (!/^\d{10}$/.test(formData.phone.trim())) newErrors.phone = "Le téléphone doit contenir exactement 10 chiffres.";
-    if (formData.email.trim() === "") newErrors.email = "L'email est requis.";
     if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Format d'email invalide.";
     if (formData.password.length < 7) newErrors.password = "Le mot de passe doit contenir au moins 7 caractères.";
     if (formData.pseudo.trim().length < 3) newErrors.pseudo = "Le pseudo doit faire au moins 3 caractères.";
+    if (parseInt(captcha.userAnswer, 10) !== captcha.answer) newErrors.captcha = "Réponse incorrecte.";
   
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0; // Retourne `true` si aucune erreur
@@ -50,7 +61,7 @@ const RegisterForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+  
     if (!validateForm()) {
       setError("Veuillez corriger les erreurs du formulaire.");
       return;
@@ -58,9 +69,7 @@ const RegisterForm = () => {
   
     try {
       const responseData = await createPartner(formData);
-      console.log("Données envoyées :", formData);
-      console.log("Partenaire créé :", responseData);
-      
+  
       if (!responseData) {
         setError("Erreur lors de la création du partenaire. Veuillez réessayer.");
         return;
@@ -68,10 +77,14 @@ const RegisterForm = () => {
         navigate("/login");
       }
     } catch (error) {
-      console.error("Erreur lors de la création du partenaire", error);
-      setError("Une erreur s'est produite. Veuillez réessayer plus tard.");
+      if (error.response && error.response.status === 400 && error.response.data.message === "L'email ou le pseudo est déjà utilisé.") {
+        setError("L'email ou le pseudo est déjà utilisé.");
+      } else {
+        setError("Une erreur s'est produite. Veuillez réessayer plus tard.");
+      }
     }
   };
+  
   
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -85,7 +98,8 @@ const RegisterForm = () => {
   };
 
   return (
-    <Box mt={10} sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+    <Box mt={5} mb={5} sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "100vh" }}>
+      <img src={pictoPlan} alt="Logo plan" style={{ maxWidth: 100, maxHeight: 100, marginBottom: 50 }} />
       <Typography sx={{ fontSize: 24, textAlign: "center", marginBottom: "50px" }} variant="h1">
         Créer un espace partenaire
       </Typography>
@@ -215,6 +229,19 @@ const RegisterForm = () => {
                       </InputAdornment>
                     ),
                   }}
+                />
+                <TextField
+                 sx={{marginTop: 5, opacity: 0.5}}
+                  name="captcha"
+                  label={captcha.question}
+                  variant="outlined"
+                  color="secondary"
+                  value={captcha.userAnswer}
+                  onChange={(e) => setCaptcha({ ...captcha, userAnswer: e.target.value })}
+                  fullWidth
+                  required
+                  error={errors.captcha}
+                  helperText={errors.captcha ? `${errors.captcha}` : "Captcha de sécurité."}
                 />
               </Box>
             </Grid>
