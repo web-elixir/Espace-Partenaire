@@ -153,10 +153,10 @@ const Scanner = ({ onScan, partnerInfo }) => {
       });
   };
 
-  const simulateScan = () => {
-    const fakeQrCodeContent = "plandesetudiantsdebesancon://profil/loyalty/378";
-    onScanSuccess(fakeQrCodeContent);
-  };
+  // const simulateScan = () => {
+  //   const fakeQrCodeContent = "plandesetudiantsdebesancon://profil/loyalty/378";
+  //   onScanSuccess(fakeQrCodeContent);
+  // };
 
   return (
     <Box>
@@ -213,9 +213,9 @@ const Scanner = ({ onScan, partnerInfo }) => {
         </Box>
       )}
 
-      <Button variant="contained" color="secondary" onClick={simulateScan} sx={{ marginTop: 2 }}>
+      {/* <Button variant="contained" color="secondary" onClick={simulateScan} sx={{ marginTop: 2 }}>
         Simuler un Scan
-      </Button>
+      </Button> */}
 
       {/* {scanResult && <Typography>{scanResult}</Typography>} */}
     </Box>
