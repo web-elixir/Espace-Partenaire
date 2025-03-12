@@ -1,36 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { Html5QrcodeScanner } from "html5-qrcode";
+import axios from 'axios';
+import { API_URL } from "../../services/api";
 
-const Scanner = ({ onScan }) => {
+const Scanner = ({ onScan, partnerInfo }) => {
   const [open, setOpen] = useState(false);
   const [scanResult, setScanResult] = useState(null);
   const [hasPermission, setHasPermission] = useState(false);
   const [permissionDenied, setPermissionDenied] = useState(false);
 
   useEffect(() => {
-    // Demande la permission pour l'appareil photo
     const checkPermission = async () => {
       try {
-        // Teste l'accès à la caméra
         await navigator.mediaDevices.getUserMedia({ video: true });
         setHasPermission(true);
-        setPermissionDenied(false); // Réinitialise si l'accès est donné
+        setPermissionDenied(false);
       } catch (err) {
         console.error("Permission de caméra refusée", err);
         setHasPermission(false);
-        setPermissionDenied(true); // Active l'état pour permission refusée
+        setPermissionDenied(true);
       }
     };
 
-    checkPermission(); // Vérifie la permission dès que le composant est monté
+    checkPermission();
   }, []);
 
   useEffect(() => {
     if (open && hasPermission) {
       const scanner = new Html5QrcodeScanner(
         "reader", { fps: 10, qrbox: { width: 250, height: 250 } },
-        /* verbose= */ false);
+        false);
       scanner.render(onScanSuccess, onScanError);
 
       return () => {
@@ -41,17 +41,30 @@ const Scanner = ({ onScan }) => {
     }
   }, [open, hasPermission]);
 
-  const onScanSuccess = (decodedText, decodedResult) => {
+  const onScanSuccess = async (decodedText, decodedResult) => {
     setScanResult(decodedText);
-    onScan(decodedText); // Passe le résultat du scan au parent
-    setOpen(false); // Ferme le scanner après un scan réussi
+    onScan(decodedText); // Notify the parent component (Home) of the scan result
+    setOpen(false);
 
-    // Tenter d'accéder au contenu
     const scannedContent = decodedText;
     console.log("Extracted content: ", scannedContent);
 
     if (scannedContent.startsWith("plandesetudiantsdebesancon")) {
-      window.open(scannedContent, "_blank");
+      try {
+        // Send data to Strapi
+        await axios.post(`${API_URL}/scan-codes`, {
+          data: {
+            partner: partnerInfo.id, // Use the partner ID from partnerInfo
+            scanDate: new Date().toISOString(),
+          }
+        });
+
+        // Update scan codes locally
+        partnerInfo.scanCodes = [...(partnerInfo.scanCodes || []), { id: Date.now(), scannedContent }];
+        console.log("Scan enregistré avec succès");
+      } catch (error) {
+        console.error("Erreur lors de l'enregistrement du scan", error);
+      }
     } else {
       console.warn("Scanned content is not a valid URL");
       alert("QR Code non valide ou contenu manquant !");
@@ -70,11 +83,9 @@ const Scanner = ({ onScan }) => {
     setOpen(false);
   };
 
-  // Fonction pour redemander l'accès à la caméra
   const requestPermission = () => {
     setPermissionDenied(false);
     setHasPermission(false);
-    // Redemande la permission pour accéder à la caméra
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(() => {
         setHasPermission(true);
@@ -84,6 +95,11 @@ const Scanner = ({ onScan }) => {
         setHasPermission(false);
         setPermissionDenied(true);
       });
+  };
+
+  const simulateScan = () => {
+    const fakeQrCodeContent = "plandesetudiantsdebesancon://profil/loyalty/35";
+    onScanSuccess(fakeQrCodeContent); // Simulate a scan with fake content
   };
 
   return (
@@ -117,7 +133,11 @@ const Scanner = ({ onScan }) => {
         </Box>
       )}
 
-      {scanResult && <Typography>{scanResult}</Typography>}
+      <Button variant="contained" color="secondary" onClick={simulateScan} sx={{ marginTop: 2 }}>
+        Simuler un Scan
+      </Button>
+
+      {/* {scanResult && <Typography>{scanResult}</Typography>} */}
     </Box>
   );
 };

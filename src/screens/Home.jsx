@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Box, Button, colors } from "@mui/material";
+import { Typography, Box, Button, colors, Snackbar, Alert } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { URL, API_URL } from "../../services/api";
 import Scanner from "../components/Scanner"; // Import du Scanner
@@ -7,10 +7,11 @@ import logoPlan from "../../public/logoplan2023.png";
 import pictoPlan from "../../public/Logo plan.png";
 
 const Home = () => {
-  const [partnerInfo, setPartnerInfo] = useState(null);
+  const [partnerInfo, setPartnerInfo] = useState({ scanCodes: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [scanResult, setScanResult] = useState(null); // État pour stocker le code scanné
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // État pour gérer la Snackbar
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,7 +31,8 @@ const Home = () => {
         }
 
         const data = await response.json();
-        setPartnerInfo(data);
+        console.log("Fetched partner data:", data); // Log the data
+        setPartnerInfo({ ...data, scanCodes: data.scanCodes || [] });
       } catch (error) {
         console.error("Erreur:", error);
         setError(error.message);
@@ -122,8 +124,25 @@ const Home = () => {
     navigate("/");
   };
 
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
+
   const handleScanResult = (result) => {
     setScanResult(result); // Mettre à jour l'état avec le code scanné
+    setSnackbarOpen(true);
+
+    // Increment the scanCodes length
+    setPartnerInfo((prevPartnerInfo) => {
+      const updatedScanCodes = [
+        ...(prevPartnerInfo.scanCodes || []),
+        { id: Date.now(), scannedContent: result }
+      ];
+      return { ...prevPartnerInfo, scanCodes: updatedScanCodes };
+    });
   };
 
   // Affichage en fonction de l'état de l'application
@@ -155,10 +174,10 @@ const Home = () => {
           }}
         >
           {/* Image du partenaire */}
-          <Box 
-            sx={{ 
-              width: { xs: "100px", md: "150px" }, 
-              height: { xs: "100px", md: "150px" } 
+          <Box
+            sx={{
+              width: { xs: "100px", md: "150px" },
+              height: { xs: "100px", md: "150px" }
             }}
           >
             <img
@@ -166,7 +185,7 @@ const Home = () => {
               alt={partnerInfo.name}
               style={{
                 width: "100%",
-                height: "100%", 
+                height: "100%",
                 objectFit: "contain"
               }}
             />
@@ -175,20 +194,20 @@ const Home = () => {
           {/* Symbole "&" */}
           <Typography
             sx={{
-              fontSize: { xs: 18, md: 25 }, 
+              fontSize: { xs: 18, md: 25 },
               marginLeft: { xs: "20px", md: "50px" },
               fontFamily: "Spoof-Bold",
             }}
           >
-            & 
+            &
           </Typography>
 
           {/* Logo Plan */}
-          <Box 
-            sx={{ 
+          <Box
+            sx={{
               marginLeft: { xs: "20px", md: "50px" },
-              width: { xs: "100px", md: "150px" }, 
-              height: { xs: "100px", md: "150px" } 
+              width: { xs: "100px", md: "150px" },
+              height: { xs: "100px", md: "150px" }
             }}
           >
             <img
@@ -196,15 +215,13 @@ const Home = () => {
               alt=""
               style={{
                 width: "100%",
-                height: "100%", 
+                height: "100%",
                 objectFit: "contain"
               }}
             />
           </Box>
         </Box>
       )}
-
-
 
       <Typography sx={{ textAlign:"left" }} variant="h1">
         Bienvenue{" "}
@@ -216,15 +233,10 @@ const Home = () => {
 
       {partnerInfo && (
         <Box sx={{ mt: 5 }}>
-
-        {partnerInfo.scanCodes ? (
           <Typography>Codes scannés : {partnerInfo.scanCodes.length}</Typography>
-        ) : (
-          <Typography>Codes scannés : 0</Typography>
-        )}
 
           {/* Afficher le scanner lorsqu'on clique sur le bouton */}
-          <Scanner onScan={handleScanResult} />
+          <Scanner onScan={handleScanResult} partnerInfo={partnerInfo} />
 
           <Typography color="primary" sx={{ mt: 5, fontFamily: "Spoof-Bold" }}>
             <b>Offre :</b>{" "}
@@ -279,16 +291,37 @@ const Home = () => {
         </Box>
       )}
 
-      {/* Affichage du code scanné */}
+      {/* Affichage du code scanné
       {scanResult && (
         <Typography variant="h6" sx={{ mt: 3 }}>
           Code scanné : {scanResult}
         </Typography>
-      )}
+      )} */}
 
-      <Button variant="contained" sx={{ m: 3 }} color="secondary" onClick={handleLogout}>
-        Se déconnecter
-      </Button>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: { xs: 'center', md: 'flex-start' },
+          mt: 5,
+        }}
+      >
+        <Button variant="contained" color="secondary" onClick={handleLogout}>
+          Se déconnecter
+        </Button>
+      </Box>
+
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          Le code a été enregistré avec succès !
+        </Alert>
+      </Snackbar>
+
     </Box>
   );
 };
