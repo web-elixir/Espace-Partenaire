@@ -31,10 +31,10 @@ const Home = () => {
         }
 
         const data = await response.json();
-        console.log("Fetched partner data:", data); // Log the data
+        // console.log("Fetched partner data:", data); // Log the data
         setPartnerInfo({ ...data, scanCodes: data.scanCodes || [] });
       } catch (error) {
-        console.error("Erreur:", error);
+        // console.error("Erreur:", error);
         setError(error.message);
       } finally {
         setLoading(false);
@@ -131,9 +131,13 @@ const Home = () => {
     setSnackbarOpen(false);
   };
 
-  const handleScanResult = (result) => {
+  const handleScanResult = (result, isSuccess) => {
     setScanResult(result); // Mettre à jour l'état avec le code scanné
-    setSnackbarOpen(true);
+
+    // Vérifier si le scanne est validé code 200
+    if (isSuccess) {
+      setSnackbarOpen(true);
+    }
 
     // Increment the scanCodes length
     setPartnerInfo((prevPartnerInfo) => {
@@ -233,7 +237,7 @@ const Home = () => {
 
       {partnerInfo && (
         <Box sx={{ mt: 5 }}>
-          <Typography>Codes scannés : {partnerInfo.scanCodes.length}</Typography>
+          <Typography>Codes scannés : <b style={{ fontSize: 20 }}>{partnerInfo.scanCodes.length}</b></Typography>
 
           {/* Afficher le scanner lorsqu'on clique sur le bouton */}
           <Scanner onScan={handleScanResult} partnerInfo={partnerInfo} />
