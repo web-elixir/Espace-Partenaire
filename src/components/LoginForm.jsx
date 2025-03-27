@@ -4,6 +4,7 @@ import { Typography, Box, Button, FormControl, TextField, InputAdornment, IconBu
 import { Link, useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { API_URL } from '../../services/api';
+import pictoPlan from '../../public/Logo plan.png'
 
 const LoginForm = () => {
   const [pseudo, setPseudo] = useState('');
@@ -24,7 +25,7 @@ const LoginForm = () => {
       setMessage('Connexion réussie');
       setError('');
       localStorage.setItem('partnerId', response.data.partnerId);
-      window.location.href = '/';
+      window.location.href = '/partenaire';
     } catch (err) {
       if (!err.response) {
         setError("Erreur serveur. Veuillez réessayer plus tard.");
@@ -62,6 +63,7 @@ const LoginForm = () => {
         height: "100vh",
       }}
     >
+      <img src={pictoPlan} alt="Logo plan" style={{ maxWidth: 100, maxHeight: 100, marginBottom: 50 }} />
       <Typography variant="h1" sx={{ fontSize: 24, marginBottom: 5, textAlign: "center" }}>
         Connexion Partenaire
       </Typography>

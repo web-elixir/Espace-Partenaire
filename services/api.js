@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export const API_URL = "https://www.strapi.plan-etudiant-besancon.com/api"; 
 export const URL = "https://www.strapi.plan-etudiant-besancon.com"; 
 
@@ -32,3 +34,28 @@ export const createPartner = async (partnerData) => {
         return null;
     }
 };
+
+
+export const incrementUserPoints = async (userId) => {
+  try {
+    // Récupérer d'abord les points actuels
+    const currentUser = await axios.get(`${API_URL}/users/${userId}`);
+    const currentPoints = currentUser.data.point || 0;
+    
+    // Mettre à jour avec le nouveau total
+    const response = await axios.put(`${API_URL}/users/${userId}`, {
+      point: currentPoints + 1
+    }, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Erreur API:", error);
+    throw error; // Propager l'erreur pour la gérer dans le composant
+  }
+};
+
+

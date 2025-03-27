@@ -3,13 +3,22 @@ import { Typography, Box, Button, colors } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { URL, API_URL } from "../../services/api";
 import Scanner from "../components/Scanner"; // Import du Scanner
+// import logoPlan from "../../public/logoplan2023.png";
 
 const Home = () => {
+
+  const logoPlan = "https://www.plan-etudiant-besancon.com/wp-content/uploads/2023/03/logoplan2023.png";
+  
+  
   const [partnerInfo, setPartnerInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [scanResult, setScanResult] = useState(null); // État pour stocker le code scanné
+  const [scanCount, setScanCount] = useState(0); // État pour le compteur de scan
   const navigate = useNavigate();
+
+
+
 
   useEffect(() => {
     const fetchPartnerInfo = async () => {
@@ -29,6 +38,7 @@ const Home = () => {
 
         const data = await response.json();
         setPartnerInfo(data);
+        setScanCount(data.scanCodes?.length || 0); // Initialiser le compteur
       } catch (error) {
         console.error("Erreur:", error);
         setError(error.message);
@@ -118,10 +128,25 @@ const Home = () => {
     navigate("/");
   };
 
-  const handleScanResult = (result) => {
-    setScanResult(result); // Mettre à jour l'état avec le code scanné
+  const handleScanResult = (result, success) => {
+    if (success) {
+      setScanResult(result);
+      setScanCount(prev => prev + 1); // Incrémentation locale
+      
+      // Mettre à jour l'état partnerInfo
+      setPartnerInfo(prev => ({
+        ...prev,
+        scanCodes: [...(prev.scanCodes || []), { 
+          id: Date.now(), // ID temporaire
+          url: result,
+          scanDate: new Date().toISOString()
+        }]
+      }));
+    } else {
+      console.error("Échec du scan:", result);
+    }
   };
-
+  
   // Affichage en fonction de l'état de l'application
   if (!localStorage.getItem("partnerId")) {
     return renderLoginPage();
@@ -134,6 +159,7 @@ const Home = () => {
   if (error) {
     return renderErrorPage();
   }
+  
 
   return (
     <Box
@@ -142,14 +168,65 @@ const Home = () => {
       }}
     >
       {partnerInfo && partnerInfo.image && (
-        <img
-          src={`${URL}${partnerInfo.image.url}`}
-          alt={partnerInfo.name}
-          style={{ maxWidth: 200, maxHeight: 200, marginBottom: 50 }}
-        />
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            flexDirection: "row",
+            marginBottom: { xs: "20px", md: "50px" },
+          }}
+        >
+          {/* Image du partenaire */}
+          <Box
+            sx={{
+              width: { xs: "100px", md: "150px" },
+              height: { xs: "100px", md: "150px" }
+            }}
+          >
+            <img
+              src={`${URL}${partnerInfo.image.url}`}
+              alt={partnerInfo.name}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "contain"
+              }}
+            />
+          </Box>
+
+          {/* Symbole "&" */}
+          <Typography
+            sx={{
+              fontSize: { xs: 18, md: 25 },
+              marginLeft: { xs: "20px", md: "50px" },
+              fontFamily: "Spoof-Bold",
+            }}
+          >
+            &
+          </Typography>
+
+          {/* Logo Plan */}
+          <Box
+            sx={{
+              marginLeft: { xs: "20px", md: "50px" },
+              width: { xs: "100px", md: "150px" },
+              height: { xs: "100px", md: "150px" }
+            }}
+          >
+            <img
+              src={logoPlan}
+              alt=""
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "contain"
+              }}
+            />
+          </Box>
+        </Box>
       )}
 
-      <Typography variant="h1">
+      <Typography variant="h1" sx={{ textAlign: "left" }}>
         Bienvenue{" "}
         <Typography variant="h1" component="span" color="secondary">
           {partnerInfo.name}
@@ -167,7 +244,7 @@ const Home = () => {
         )}
 
           {/* Afficher le scanner lorsqu'on clique sur le bouton */}
-          <Scanner onScan={handleScanResult} />
+          <Scanner onScan={handleScanResult} partnerInfo={partnerInfo} />
 
           <Typography sx={{ mt: 2 }}>
             <b>Offre :</b>{" "}
@@ -236,3 +313,4 @@ const Home = () => {
 };
 
 export default Home;
+
