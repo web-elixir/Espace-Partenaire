@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Box, Button, colors } from "@mui/material";
+import { Typography, Box, Button, colors, Snackbar, Alert } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { URL, API_URL } from "../../services/api";
 import Scanner from "../components/Scanner"; // Import du Scanner
-// import logoPlan from "../../public/logoplan2023.png";
+import logoPlan from "../../public/logoplan2023.png";
+// import pictoPlan from "../../public/Logo plan.png";
 
 const Home = () => {
 
-  const logoPlan = "https://www.plan-etudiant-besancon.com/wp-content/uploads/2023/03/logoplan2023.png";
+  // const logoPlan = "https://www.plan-etudiant-besancon.com/wp-content/uploads/2023/03/logoplan2023.png";
   
   
   const [partnerInfo, setPartnerInfo] = useState(null);
@@ -60,7 +61,9 @@ const Home = () => {
         height: "100vh",
       }}
     >
-      <Typography variant="h1" sx={{ fontSize: 24, marginBottom: 5 }}>
+      {/* Afficher le logo du plan qui est dans mon dossier public a la racine */}
+      <img src={logoPlan} alt="Logo plan" style={{ maxWidth: 200, maxHeight: 200, marginBottom: 50 }} />
+      <Typography variant="h1" sx={{ fontSize: 24, marginBottom: 5, fontFamily: "Spoof-Bold" }}>
         Partenaire du plan des étudiants ?
       </Typography>
       <Button component={Link} to="/login" variant="contained" sx={{ m: 3 }}>
@@ -164,7 +167,7 @@ const Home = () => {
   return (
     <Box
       sx={{
-        margin: 5,
+        margin: { xs: 2, md: 5 },
       }}
     >
       {partnerInfo && partnerInfo.image && (
@@ -228,7 +231,7 @@ const Home = () => {
 
       <Typography variant="h1" sx={{ textAlign: "left" }}>
         Bienvenue{" "}
-        <Typography variant="h1" component="span" color="secondary">
+        <Typography variant="h1" sx={{ fontFamily: "Spoof-Bold" }} component="span" color="secondary">
           {partnerInfo.name}
         </Typography>{" "}
         sur votre espace partenaire
@@ -238,7 +241,7 @@ const Home = () => {
         <Box sx={{ mt: 5 }}>
 
         {partnerInfo.scanCodes ? (
-          <Typography>Codes scannés : {partnerInfo.scanCodes.length}</Typography>
+          <Typography>Codes scannés : <Typography component="span" sx={{ fontWeight: "bold", fontSize: 20 }}>{partnerInfo.scanCodes.length}</Typography></Typography>
         ) : (
           <Typography>Codes scannés : 0</Typography>
         )}
@@ -246,7 +249,7 @@ const Home = () => {
           {/* Afficher le scanner lorsqu'on clique sur le bouton */}
           <Scanner onScan={handleScanResult} partnerInfo={partnerInfo} />
 
-          <Typography sx={{ mt: 2 }}>
+          <Typography color="primary" sx={{ mt: 5, fontFamily: "Spoof-Bold" }}>
             <b>Offre :</b>{" "}
             <Typography component="span" color="primary">
               <b>{partnerInfo.offer?.title}</b>
@@ -259,11 +262,12 @@ const Home = () => {
               maxWidth: 600,
               display: "flex",
               flexDirection: "column",
-              backgroundColor: colors.grey[100],
+              backgroundColor: colors.grey[50],
               padding: 2,
+              borderRadius: 5
             }}
           >
-            <Typography variant="h2" sx={{ fontSize: 20 }}>
+            <Typography variant="h2" sx={{ fontSize: 20, fontFamily: "Spoof-Bold" }}>
               Vos informations :
             </Typography>
             <Typography sx={{ mt: 2 }}>
@@ -298,16 +302,37 @@ const Home = () => {
         </Box>
       )}
 
-      {/* Affichage du code scanné */}
+      {/* Affichage du code scanné
       {scanResult && (
         <Typography variant="h6" sx={{ mt: 3 }}>
           Code scanné : {scanResult}
         </Typography>
-      )}
+      )} */}
 
-      <Button variant="contained" sx={{ m: 3 }} color="secondary" onClick={handleLogout}>
-        Se déconnecter
-      </Button>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: { xs: 'center', md: 'flex-start' },
+          mt: 5,
+          mb: 5,
+        }}
+      >
+        <Button variant="contained" color="secondary" onClick={handleLogout}>
+          Se déconnecter
+        </Button>
+      </Box>
+
+      {/* <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+          Le code a été enregistré avec succès !
+        </Alert>
+      </Snackbar> */}
+
     </Box>
   );
 };
