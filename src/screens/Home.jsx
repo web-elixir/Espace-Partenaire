@@ -237,6 +237,13 @@ const Home = () => {
         sur votre espace partenaire
       </Typography>
 
+      <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 5, gap: 2, marginTop: 5 }}>
+        <img src="https://cdn-icons-png.flaticon.com/512/2817/2817802.png" alt="Podium" width="50" height="50"></img>
+        <Typography color="primary" sx={{ color: "grey" }}>
+          Devenez le meilleur annonceur du plan des étudiants de Besançon !
+        </Typography>
+      </Box>
+
       {partnerInfo && (
         <Box sx={{ mt: 5 }}>
 
@@ -245,6 +252,7 @@ const Home = () => {
         ) : (
           <Typography>Codes scannés : 0</Typography>
         )}
+
 
           {/* Afficher le scanner lorsqu'on clique sur le bouton */}
           <Scanner onScan={handleScanResult} partnerInfo={partnerInfo} />

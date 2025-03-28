@@ -111,7 +111,7 @@ const RegisterForm = () => {
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <TextField
                   name="name"
-                  label="Nom"
+                  label="Nom du partenaire"
                   variant="outlined"
                   color="secondary"
                   value={formData.name}
