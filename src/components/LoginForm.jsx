@@ -60,7 +60,7 @@ const LoginForm = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        height: "100vh",
+        height: "98vh",
       }}
     >
       <img src={pictoPlan} alt="Logo plan" style={{ maxWidth: 100, maxHeight: 100, marginBottom: 50 }} />

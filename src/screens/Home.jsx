@@ -58,7 +58,7 @@ const Home = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        height: "100vh",
+        height: "98vh",
       }}
     >
       {/* Afficher le logo du plan qui est dans mon dossier public a la racine */}
@@ -88,7 +88,7 @@ const Home = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        height: "100vh",
+        height: "98vh",
       }}
     >
       <Typography variant="h1" sx={{ fontSize: 24, marginBottom: 5 }}>
@@ -104,7 +104,7 @@ const Home = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        height: "100vh",
+        height: "98vh",
       }}
     >
       <Typography variant="h1" sx={{ fontSize: 24, marginBottom: 5 }}>
